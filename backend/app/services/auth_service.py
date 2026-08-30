@@ -69,7 +69,8 @@ def send_signup_otp(
 
     return {
         "message": "OTP sent successfully to your email!" if email_sent else f"OTP generated! (Verification Code: {otp})",
-        "email": data.email
+        "email": data.email,
+        "otp": otp,
     }
 
 

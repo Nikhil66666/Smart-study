@@ -19,9 +19,15 @@ function VerifyOTP() {
     const location = useLocation();
     const navigate  = useNavigate();
     const email     = location.state?.email || "";
+    const prefillOtp = location.state?.otp || "";
 
     /* OTP stored as array of single chars for the box inputs */
-    const [digits, setDigits]   = useState(Array(OTP_LENGTH).fill(""));
+    const [digits, setDigits]   = useState(() => {
+        if (prefillOtp && prefillOtp.length === OTP_LENGTH) {
+            return prefillOtp.split("");
+        }
+        return Array(OTP_LENGTH).fill("");
+    });
     const [loading, setLoading] = useState(false);
     const refs = useRef([]);
 

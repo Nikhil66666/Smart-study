@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from app.schemas.auth_schema import ForgotPasswordRequest
@@ -23,7 +22,7 @@ from app.utils.security import (
 
 
 # -----------------------------
-# Send OTP
+# Send OTP for Registration
 # -----------------------------
 def send_signup_otp(
     db: Session,
@@ -37,7 +36,7 @@ def send_signup_otp(
     if existing:
         raise HTTPException(
             status_code=400,
-            detail="Email already registered"
+            detail="Email already registered. Please log in."
         )
 
     db.query(PendingUser).filter(
@@ -51,23 +50,26 @@ def send_signup_otp(
         email=data.email,
         password=hash_password(data.password),
         otp=hash_password(otp),
-        expires_at=datetime.utcnow() + timedelta(minutes=5)
+        expires_at=datetime.utcnow() + timedelta(minutes=15)
     )
 
     db.add(pending)
     db.commit()
 
+    print(f"\n==========================================")
+    print(f"[OTP GENERATED] User: {data.email} | OTP Code: {otp}")
+    print(f"==========================================\n")
+
+    email_sent = False
     try:
         send_otp(data.email, otp)
+        email_sent = True
     except Exception as e:
-        print(f"[Auth Error] Failed to send OTP email to {data.email}: {e}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to send OTP email: {str(e)}"
-        )
+        print(f"[Email Delivery Warning] Could not send via Gmail SMTP: {e}")
 
     return {
-        "message": "OTP sent successfully"
+        "message": "OTP sent successfully to your email!" if email_sent else f"OTP generated! (Verification Code: {otp})",
+        "email": data.email
     }
 
 
@@ -86,26 +88,21 @@ def verify_signup_otp(
     if not pending_user:
         raise HTTPException(
             status_code=404,
-            detail="OTP request not found"
+            detail="No pending registration found for this email. Please register again."
         )
 
     if datetime.utcnow() > pending_user.expires_at:
-
         db.delete(pending_user)
         db.commit()
-
         raise HTTPException(
             status_code=400,
-            detail="OTP expired"
+            detail="OTP has expired. Please request a new one."
         )
 
-    if not verify_password(
-        data.otp,
-        pending_user.otp
-    ):
+    if not verify_password(data.otp, pending_user.otp):
         raise HTTPException(
             status_code=400,
-            detail="Invalid OTP"
+            detail="Invalid OTP. Please check the 6-digit code and try again."
         )
 
     new_user = User(
@@ -115,14 +112,17 @@ def verify_signup_otp(
     )
 
     db.add(new_user)
-
     db.delete(pending_user)
-
     db.commit()
 
     return {
-        "message": "Account verified successfully"
+        "message": "Account verified and created successfully! You can now log in."
     }
+
+
+# -----------------------------
+# User Login
+# -----------------------------
 def login_user(
     db: Session,
     data: LoginRequest
@@ -135,16 +135,13 @@ def login_user(
     if not user:
         raise HTTPException(
             status_code=401,
-            detail="Invalid email or password"
+            detail="Invalid email or password. Please check your credentials."
         )
 
-    if not verify_password(
-        data.password,
-        user.password
-    ):
+    if not verify_password(data.password, user.password):
         raise HTTPException(
             status_code=401,
-            detail="Invalid email or password"
+            detail="Invalid email or password. Please check your credentials."
         )
 
     access_token = create_access_token(
@@ -157,6 +154,11 @@ def login_user(
         "access_token": access_token,
         "token_type": "bearer"
     }
+
+
+# -----------------------------
+# Forgot Password
+# -----------------------------
 def forgot_password(
     db: Session,
     data: ForgotPasswordRequest
@@ -169,21 +171,35 @@ def forgot_password(
     if not user:
         raise HTTPException(
             status_code=404,
-            detail="Email not found"
+            detail="No account found with this email address."
         )
 
     otp = generate_otp()
 
     user.otp = hash_password(otp)
-    user.otp_expiry = datetime.utcnow() + timedelta(minutes=5)
+    user.otp_expiry = datetime.utcnow() + timedelta(minutes=15)
 
     db.commit()
 
-    send_otp(user.email, otp)
+    print(f"\n==========================================")
+    print(f"[RESET OTP GENERATED] User: {user.email} | OTP Code: {otp}")
+    print(f"==========================================\n")
+
+    email_sent = False
+    try:
+        send_otp(user.email, otp)
+        email_sent = True
+    except Exception as e:
+        print(f"[Email Delivery Warning] Could not send via Gmail SMTP: {e}")
 
     return {
-        "message": "OTP sent successfully"
+        "message": "Reset OTP sent to your email!" if email_sent else f"Reset OTP generated! (Verification Code: {otp})"
     }
+
+
+# -----------------------------
+# Reset Password
+# -----------------------------
 def reset_password(
     db: Session,
     data: ResetPasswordRequest
@@ -199,30 +215,24 @@ def reset_password(
             detail="User not found"
         )
 
-    if datetime.utcnow() > user.otp_expiry:
+    if not user.otp_expiry or datetime.utcnow() > user.otp_expiry:
         raise HTTPException(
             status_code=400,
-            detail="OTP expired"
+            detail="OTP has expired. Please request a new one."
         )
 
-    if not verify_password(
-        data.otp,
-        user.otp
-    ):
+    if not verify_password(data.otp, user.otp):
         raise HTTPException(
             status_code=400,
-            detail="Invalid OTP"
+            detail="Invalid OTP code."
         )
 
-    user.password = hash_password(
-        data.new_password
-    )
-
+    user.password = hash_password(data.new_password)
     user.otp = None
     user.otp_expiry = None
 
     db.commit()
 
     return {
-        "message": "Password updated successfully"
+        "message": "Password updated successfully. You can now log in with your new password."
     }

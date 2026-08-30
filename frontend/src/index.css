@@ -1,0 +1,184 @@
+@import "tailwindcss";
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family: 'Inter', 'Segoe UI', Arial, Helvetica, sans-serif;
+}
+
+
+/* Hide scrollbars globally while keeping scroll functionality */
+::-webkit-scrollbar {
+    display: none;
+}
+
+* {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+/* ─────────────────────────────────────────────
+   Auth pages — responsive two-panel card
+───────────────────────────────────────────── */
+
+/* Desktop: two-column grid (default) */
+.auth-card {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    height: min(880px, calc(100vh - 2rem)) !important;
+}
+
+.auth-left {
+    display: flex !important;
+}
+
+/* Tablet — hide left panel, full-width form */
+@media (max-width: 860px) {
+    .auth-card {
+        grid-template-columns: 1fr !important;
+        height: auto !important;
+        min-height: 100dvh !important;
+        border-radius: 0 !important;
+    }
+
+    .auth-left {
+        display: none !important;
+    }
+
+    .auth-right {
+        padding: 2.5rem 1.5rem !important;
+        min-height: 100dvh !important;
+        justify-content: center !important;
+    }
+
+    .auth-page {
+        padding: 0 !important;
+        align-items: flex-start !important;
+    }
+}
+
+/* Mobile — tighten horizontal padding further */
+@media (max-width: 480px) {
+    .auth-right {
+        padding: 2rem 1.25rem !important;
+    }
+
+    .auth-form-wrap {
+        max-width: 100% !important;
+    }
+}
+
+/* ─────────────────────────────────────────────
+   Inner app pages — responsive layout
+───────────────────────────────────────────── */
+
+/* ── Page header — stack on mobile ── */
+.app-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+
+@media (max-width: 640px) {
+    .app-page-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    .app-page-header button {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+}
+
+/* ── Dashboard — stats grid responsive ── */
+.dash-stats-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 1rem !important;
+    margin-bottom: 1rem !important;
+}
+
+@media (max-width: 900px) {
+    .dash-stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .dash-stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.65rem !important;
+    }
+}
+
+/* ── Table card — horizontal scroll on small screens ── */
+.app-table-card {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ── StudyPlan — two-col layout ── */
+.sp-two-col {
+    display: grid !important;
+    grid-template-columns: 270px 1fr !important;
+    gap: 1.5rem !important;
+    align-items: start !important;
+}
+
+@media (max-width: 900px) {
+    .sp-two-col {
+        grid-template-columns: 1fr !important;
+    }
+
+    .sp-date-sidebar {
+        display: none !important;
+    }
+}
+
+/* ── Dashboard — 2-Column Desktop Grid ── */
+.dash-desktop-grid {
+    display: grid !important;
+    grid-template-columns: 1.6fr 1fr !important;
+    gap: 1.35rem !important;
+    align-items: start !important;
+}
+
+@media (max-width: 1024px) {
+    .dash-desktop-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* ── AI Workspace — Desktop Grid ── */
+.ai-workspace-layout {
+    display: grid !important;
+    grid-template-columns: 320px 1fr !important;
+    gap: 1.35rem !important;
+    align-items: stretch !important;
+}
+
+@media (max-width: 980px) {
+    .ai-workspace-layout {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* ── Subjects — Top Stats Grid ── */
+.subjects-stats-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 1.15rem !important;
+}
+
+@media (max-width: 768px) {
+    .subjects-stats-grid {
+        grid-template-columns: 1fr !important;
+    }
+}

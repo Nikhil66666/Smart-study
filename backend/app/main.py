@@ -9,7 +9,6 @@ from app.models.pending_user import PendingUser
 from app.models.study_plan import StudyPlan
 from app.models.exam import Exam
 from app.models.subject import Subject
-from app.models.otp import OTP
 
 from app.routers.user_router import router as user_router
 from app.routers.auth_router import router as auth_router

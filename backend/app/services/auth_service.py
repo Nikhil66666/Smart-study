@@ -57,7 +57,14 @@ def send_signup_otp(
     db.add(pending)
     db.commit()
 
-    send_otp(data.email, otp)
+    try:
+        send_otp(data.email, otp)
+    except Exception as e:
+        print(f"[Auth Error] Failed to send OTP email to {data.email}: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to send OTP email: {str(e)}"
+        )
 
     return {
         "message": "OTP sent successfully"

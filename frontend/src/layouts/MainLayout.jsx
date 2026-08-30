@@ -260,10 +260,10 @@ function MainLayout({ children }) {
 
                 {/* STICKY GLASS HEADER */}
                 <header style={styles.topHeader}>
-                    <div style={styles.topHeaderInner}>
+                    <div style={styles.topHeaderInner} className="top-header-inner">
                         
                         {/* Left: Mobile hamburger + Dynamic Greeting */}
-                        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", minWidth: 0, flex: 1 }}>
                             <button
                                 onClick={() => setSidebarOpen(true)}
                                 style={styles.mobileHamburgerBtn}
@@ -271,7 +271,7 @@ function MainLayout({ children }) {
                             >
                                 ☰
                             </button>
-                            <div>
+                            <div style={{ minWidth: 0, flex: 1 }}>
                                 <h2 style={styles.greetingTitle}>
                                     {greeting}, {userInfo.displayName} 👋
                                 </h2>
@@ -282,11 +282,12 @@ function MainLayout({ children }) {
                         </div>
 
                         {/* Right: AI Coach Shortcut, Notification Bell & Avatar */}
-                        <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexShrink: 0 }}>
                             <button
                                 onClick={() => navigate("/ai-assistant")}
                                 title="Open AI Study Coach"
                                 style={styles.aiCoachHeaderBtn}
+                                className="desktop-only-btn"
                             >
                                 <span style={{ fontSize: "0.95rem" }}>✦</span>
                                 <span>AI Study Coach</span>
@@ -305,7 +306,7 @@ function MainLayout({ children }) {
                 </header>
 
                 {/* MAIN INNER PAGE CONTENT */}
-                <main style={styles.mainContentContainer}>
+                <main style={styles.mainContentContainer} className="main-content-box">
                     {children}
                 </main>
 
@@ -595,6 +596,8 @@ const styles = {
         position: "sticky",
         top: 0,
         zIndex: 30,
+        width: "100%",
+        overflowX: "hidden",
     },
 
     topHeaderInner: {
@@ -604,7 +607,9 @@ const styles = {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "0 2rem",
+        padding: "0 1rem",
+        boxSizing: "border-box",
+        width: "100%",
     },
 
     mobileHamburgerBtn: {
@@ -619,41 +624,49 @@ const styles = {
         alignItems: "center",
         justifyContent: "center",
         cursor: "pointer",
+        flexShrink: 0,
     },
 
     greetingTitle: {
-        fontSize: "1.3rem",
+        fontSize: "1.15rem",
         fontWeight: 800,
         color: "#ffffff",
         margin: 0,
         lineHeight: 1.2,
         letterSpacing: "-0.01em",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
     },
 
     greetingSubtitle: {
         fontSize: "0.78rem",
         color: "#9ca3af",
         margin: "0.2rem 0 0",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
     },
 
     aiCoachHeaderBtn: {
         display: "flex",
         alignItems: "center",
         gap: "0.45rem",
-        padding: "0.5rem 0.95rem",
+        padding: "0.45rem 0.85rem",
         borderRadius: "9999px",
         background: "linear-gradient(135deg, rgba(124, 58, 237, 0.25), rgba(99, 102, 241, 0.25))",
         border: "1px solid rgba(168, 85, 247, 0.4)",
         color: "#c084fc",
-        fontSize: "0.78rem",
+        fontSize: "0.75rem",
         fontWeight: 700,
         cursor: "pointer",
         boxShadow: "0 2px 10px rgba(124, 58, 237, 0.2)",
+        flexShrink: 0,
     },
 
     iconBtn: {
-        width: "38px",
-        height: "38px",
+        width: "36px",
+        height: "36px",
         borderRadius: "0.75rem",
         background: "rgba(255, 255, 255, 0.04)",
         border: "1px solid rgba(255, 255, 255, 0.08)",
@@ -662,29 +675,32 @@ const styles = {
         alignItems: "center",
         justifyContent: "center",
         cursor: "pointer",
+        flexShrink: 0,
     },
 
     headerAvatar: {
-        width: "38px",
-        height: "38px",
+        width: "36px",
+        height: "36px",
         borderRadius: "0.75rem",
         background: "rgba(124, 58, 237, 0.2)",
         border: "1px solid rgba(168, 85, 247, 0.35)",
         color: "#c084fc",
         fontWeight: 800,
-        fontSize: "0.85rem",
+        fontSize: "0.82rem",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        flexShrink: 0,
     },
 
     mainContentContainer: {
         flex: 1,
-        padding: "1.75rem 2rem 3rem",
+        padding: "1.25rem 1rem 5.5rem",
         maxWidth: "1600px",
         width: "100%",
         margin: "0 auto",
         boxSizing: "border-box",
+        overflowX: "hidden",
     },
 
     /* Mobile Bottom Nav */

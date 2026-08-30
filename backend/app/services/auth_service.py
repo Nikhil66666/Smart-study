@@ -133,13 +133,24 @@ def login_user(
         User.email == data.email
     ).first()
 
+    print(f"[Login] Attempt for email: {data.email}")
+    print(f"[Login] User found in DB: {user is not None}")
+
     if not user:
+        print(f"[Login] FAILED - No user found with email: {data.email}")
         raise HTTPException(
             status_code=401,
             detail="Invalid email or password. Please check your credentials."
         )
 
-    if not verify_password(data.password, user.password):
+    print(f"[Login] Stored password hash (first 20 chars): {user.password[:20] if user.password else 'EMPTY'}")
+    print(f"[Login] Plain password length: {len(data.password)}")
+
+    pwd_match = verify_password(data.password, user.password)
+    print(f"[Login] Password match result: {pwd_match}")
+
+    if not pwd_match:
+        print(f"[Login] FAILED - Password mismatch for user: {data.email}")
         raise HTTPException(
             status_code=401,
             detail="Invalid email or password. Please check your credentials."
@@ -151,6 +162,7 @@ def login_user(
         }
     )
 
+    print(f"[Login] SUCCESS for user: {data.email}")
     return {
         "access_token": access_token,
         "token_type": "bearer"

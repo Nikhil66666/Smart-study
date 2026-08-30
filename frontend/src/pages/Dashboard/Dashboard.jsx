@@ -332,15 +332,52 @@ function Dashboard() {
                 <div style={S.rightColumn}>
                     {/* Overall Progress Snapshot Card */}
                     <div style={S.sideCard}>
-                        <h3 style={S.sideCardTitle}>🎯 Total Hours Summary</h3>
+                        <h3 style={S.sideCardTitle}>
+                            <span style={{ color: "#fbbf24" }}>⏱</span> Total Hours Summary
+                        </h3>
+                        
+                        {/* Circular Hours Gauge matching Image 1 */}
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "1.2rem 0 0.8rem" }}>
+                            <div style={{ position: "relative", width: "130px", height: "130px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                <svg width="130" height="130" viewBox="0 0 130 130">
+                                    <circle cx="65" cy="65" r="54" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="10" />
+                                    <circle
+                                        cx="65" cy="65" r="54"
+                                        fill="none"
+                                        stroke="url(#hoursGaugeGrad)"
+                                        strokeWidth="10"
+                                        strokeLinecap="round"
+                                        strokeDasharray={`${2 * Math.PI * 54}`}
+                                        strokeDashoffset={`${2 * Math.PI * 54 * (1 - overallProgress / 100)}`}
+                                        transform="rotate(-90 65 65)"
+                                        style={{ transition: "stroke-dashoffset 1s ease" }}
+                                    />
+                                    <defs>
+                                        <linearGradient id="hoursGaugeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stopColor="#a855f7" />
+                                            <stop offset="100%" stopColor="#3b82f6" />
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                                <div style={{ position: "absolute", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                    <span style={{ fontSize: "2rem", fontWeight: 900, color: "#fff", lineHeight: 1, fontFamily: "'Inter', sans-serif" }}>
+                                        {summary?.completed_hours ?? 0}
+                                    </span>
+                                    <span style={{ fontSize: "0.7rem", color: "#9ca3af", fontWeight: 600, marginTop: "2px" }}>
+                                        Total Hours
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
                         <div style={S.hoursOverview}>
                             <div style={S.hoursNumBox}>
-                                <span style={S.hoursBigNum}>{summary?.completed_hours ?? 0}</span>
-                                <span style={S.hoursSub}>Completed Hrs</span>
+                                <span style={S.hoursBigNum}>{summary?.completed_hours ?? 0} hrs</span>
+                                <span style={S.hoursSub}>Completed</span>
                             </div>
                             <div style={S.hoursDivider}>/</div>
                             <div style={S.hoursNumBox}>
-                                <span style={{ ...S.hoursBigNum, color: "#9ca3af" }}>{summary?.total_required_hours ?? 0}</span>
+                                <span style={{ ...S.hoursBigNum, color: "#9ca3af" }}>{summary?.total_required_hours ?? 0} hrs</span>
                                 <span style={S.hoursSub}>Required Total</span>
                             </div>
                         </div>

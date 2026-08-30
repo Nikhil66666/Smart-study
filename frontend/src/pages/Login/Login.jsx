@@ -33,6 +33,7 @@ function Login() {
             const response = await loginUser({ email, password });
 
             localStorage.setItem("token", response.access_token);
+            localStorage.setItem("userEmail", email);
 
             toast.success("Login Successful");
 

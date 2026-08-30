@@ -199,8 +199,8 @@ function VerifyOTP() {
                         </div>
 
                         {/* Heading */}
-                        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-                            <h2 style={S.formTitle}>Check your email</h2>
+                        <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
+                            <h2 style={S.formTitle}>Verify your email</h2>
                             <p style={S.formSub}>
                                 We sent a code to{" "}
                                 <span style={{ color: "#d8b4fe", fontWeight: 600 }}>
@@ -208,6 +208,29 @@ function VerifyOTP() {
                                 </span>
                             </p>
                         </div>
+
+                        {/* ── OTP DISPLAY BOX (shown when email can't be delivered) ── */}
+                        {prefillOtp && (
+                            <div style={{
+                                background: "linear-gradient(135deg, rgba(168,85,247,0.15), rgba(99,102,241,0.1))",
+                                border: "1.5px solid rgba(168,85,247,0.5)",
+                                borderRadius: "1rem",
+                                padding: "1.1rem 1.4rem",
+                                marginBottom: "1.5rem",
+                                textAlign: "center",
+                                boxShadow: "0 0 20px rgba(168,85,247,0.2)",
+                            }}>
+                                <p style={{ fontSize: "0.72rem", color: "#a855f7", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.4rem" }}>
+                                    📧 Email delivery delayed — Use this code
+                                </p>
+                                <p style={{ fontSize: "2rem", fontWeight: 900, letterSpacing: "0.35em", color: "#f9fafb", margin: 0, fontFamily: "'Courier New', monospace" }}>
+                                    {prefillOtp}
+                                </p>
+                                <p style={{ fontSize: "0.72rem", color: "#6b7280", marginTop: "0.4rem" }}>
+                                    Boxes are already filled — just click Verify Email ↓
+                                </p>
+                            </div>
+                        )}
 
                         {/* OTP boxes */}
                         <form onSubmit={handleVerify}>
@@ -230,7 +253,7 @@ function VerifyOTP() {
                                             borderColor: d ? "#a855f7" : "rgba(255,255,255,0.12)",
                                             color: d ? "#fff" : "#6b7280",
                                         }}
-                                        autoFocus={i === 0}
+                                        autoFocus={i === 0 && !prefillOtp}
                                     />
                                 ))}
                             </div>
@@ -238,7 +261,7 @@ function VerifyOTP() {
                             {/* Expiry notice */}
                             <div style={S.expiry}>
                                 <FaClock style={{ fontSize: "0.75rem", color: "#6b7280" }} />
-                                <span style={{ fontSize: "0.78rem", color: "#6b7280" }}>Code expires in 10 minutes</span>
+                                <span style={{ fontSize: "0.78rem", color: "#6b7280" }}>Code expires in 15 minutes</span>
                             </div>
 
                             {/* Submit */}

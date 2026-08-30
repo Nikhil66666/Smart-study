@@ -35,20 +35,21 @@ function Register() {
             setLoading(true);
             const response = await sendOTP(formData);
             const otpFromServer = response?.otp || null;
-            // If email could not be delivered, the OTP is shown in the toast
+            // If email could not be delivered, show OTP prominently in toast
             if (otpFromServer) {
-                toast.info(`📋 Your verification code: ${otpFromServer}`, {
-                    autoClose: 30000,
-                    style: { fontWeight: 700, fontSize: "1rem", letterSpacing: "0.1em" }
+                toast.info(`📋 Your verification code: ${otpFromServer} — Taking you to verify page...`, {
+                    autoClose: 8000,
+                    style: { fontWeight: 700, fontSize: "0.95rem", letterSpacing: "0.05em" }
                 });
             } else {
                 toast.success(response?.message || "OTP sent to your email!");
             }
+            // Wait 3s so user can see/copy the OTP before navigating
             setTimeout(() => {
                 navigate("/verify-otp", {
                     state: { email: formData.email, otp: otpFromServer }
                 });
-            }, 1200);
+            }, 3000);
         } catch (error) {
             toast.error(
                 error.response?.data?.detail ||

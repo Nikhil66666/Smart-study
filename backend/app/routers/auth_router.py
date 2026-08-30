@@ -63,3 +63,14 @@ def reset_password_api(
     db: Session = Depends(get_db)
 ):
     return reset_password(db, data)
+
+
+@router.get("/debug-users")
+def debug_list_users(db: Session = Depends(get_db)):
+    """Debug: list registered users (email only, no passwords)."""
+    from app.models.user import User
+    users = db.query(User).all()
+    return {
+        "total_users": len(users),
+        "users": [{"id": u.id, "email": u.email, "name": u.name} for u in users]
+    }

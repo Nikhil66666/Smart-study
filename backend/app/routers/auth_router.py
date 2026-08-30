@@ -74,3 +74,36 @@ def debug_list_users(db: Session = Depends(get_db)):
         "total_users": len(users),
         "users": [{"id": u.id, "email": u.email, "name": u.name} for u in users]
     }
+
+
+@router.get("/test-email")
+def test_email_api(to: str = "nikhilmkasbe@gmail.com"):
+    """Debug: Test sending email directly and return full diagnostic report."""
+    import os
+    from app.auth.email_service import send_otp
+    
+    sender = os.getenv("EMAIL_ADDRESS")
+    pwd_set = bool(os.getenv("EMAIL_PASSWORD"))
+    
+    if not sender or not pwd_set:
+        return {
+            "status": "error",
+            "message": "EMAIL_ADDRESS or EMAIL_PASSWORD is NOT configured in Render Environment Variables.",
+            "EMAIL_ADDRESS": sender or "MISSING",
+            "EMAIL_PASSWORD_SET": pwd_set
+        }
+    
+    try:
+        send_otp(to, "999999")
+        return {
+            "status": "success",
+            "message": f"Test email sent successfully to {to}!",
+            "sender": sender
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Failed to send email: {str(e)}",
+            "sender": sender,
+            "EMAIL_PASSWORD_SET": pwd_set
+        }

@@ -1,6 +1,7 @@
 import os
 import json
 import urllib.request
+import urllib.error
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -8,17 +9,18 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-def send_via_resend(api_key: str, to_email: str, otp: str) -> bool:
+def send_via_resend(api_key: str, to_email: str, otp: str) -> tuple[bool, str]:
     """Send email via Resend HTTPS REST API (Port 443 - never blocked by cloud hosts)."""
     try:
         url = "https://api.resend.com/emails"
         headers = {
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json"
+            "Authorization": f"Bearer {api_key.strip()}",
+            "Content-Type": "application/json",
+            "User-Agent": "SmartStudy/1.0"
         }
         payload = {
             "from": "Smart Study <onboarding@resend.dev>",
-            "to": [to_email],
+            "to": [to_email.strip()],
             "subject": f"Smart Study – Your Verification OTP: {otp}",
             "html": f"""
             <div style="font-family:Arial,sans-serif;background:#0d1120;color:#f9fafb;padding:32px;">
@@ -34,29 +36,39 @@ def send_via_resend(api_key: str, to_email: str, otp: str) -> bool:
             """
         }
         req = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"), headers=headers, method="POST")
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            if resp.status in (200, 201):
-                print(f"[Email Service] ✅ Successfully sent OTP to {to_email} via Resend HTTP API")
-                return True
+        with urllib.request.urlopen(req, timeout=12) as resp:
+            resp_body = resp.read().decode("utf-8")
+            print(f"[Email Service] ✅ Resend response ({resp.status}): {resp_body}")
+            return True, f"Sent via Resend (status {resp.status})"
+    except urllib.error.HTTPError as he:
+        error_detail = he.read().decode("utf-8")
+        print(f"[Email Service Error] Resend HTTP {he.code}: {error_detail}")
+        return False, f"Resend API Error {he.code}: {error_detail}"
     except Exception as e:
-        print(f"[Email Service Warning] Resend API failed: {e}")
-    return False
+        print(f"[Email Service Warning] Resend connection error: {e}")
+        return False, f"Resend Exception: {str(e)}"
 
 def send_otp(email: str, otp: str):
-    # 1. First priority: If Resend API Key is configured, use HTTP (works 100% on all cloud platforms)
     resend_key = os.getenv("RESEND_API_KEY")
-    if resend_key:
-        if send_via_resend(resend_key, email, otp):
-            return
+    resend_error = None
 
-    # 2. Second priority: Standard Gmail SMTP (for local dev or servers with open ports)
+    # 1. First priority: Resend HTTP API (Port 443)
+    if resend_key:
+        success, msg = send_via_resend(resend_key, email, otp)
+        if success:
+            return
+        resend_error = msg
+
+    # 2. Second priority: Standard Gmail SMTP (if running locally or server has open ports)
     email_address = os.getenv("EMAIL_ADDRESS")
     email_password = os.getenv("EMAIL_PASSWORD")
 
     if not email_address or not email_password:
+        if resend_error:
+            raise Exception(f"Resend delivery failed: {resend_error}")
         raise Exception("EMAIL_ADDRESS or EMAIL_PASSWORD env variables are not set on the server.")
 
-    print(f"[Email] Attempting to send OTP to {email} from {email_address}")
+    print(f"[Email] Attempting fallback to Gmail SMTP for {email}...")
 
     msg = MIMEMultipart("alternative")
     msg["Subject"] = f"Smart Study – Your OTP Code: {otp}"
@@ -102,4 +114,5 @@ def send_otp(email: str, otp: str):
             return
     except Exception as e465:
         print(f"[Email] Port 465 failed: {e465}")
-        raise Exception(f"SMTP ports blocked by cloud host ({e465}).")
+        detail = f"Resend Error: {resend_error} | SMTP Error: {e465}" if resend_error else f"SMTP ports blocked ({e465})"
+        raise Exception(detail)

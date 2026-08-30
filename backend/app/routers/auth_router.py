@@ -84,26 +84,25 @@ def test_email_api(to: str = "nikhilmkasbe@gmail.com"):
     
     sender = os.getenv("EMAIL_ADDRESS")
     pwd_set = bool(os.getenv("EMAIL_PASSWORD"))
+    resend_key = os.getenv("RESEND_API_KEY")
     
-    if not sender or not pwd_set:
-        return {
-            "status": "error",
-            "message": "EMAIL_ADDRESS or EMAIL_PASSWORD is NOT configured in Render Environment Variables.",
-            "EMAIL_ADDRESS": sender or "MISSING",
-            "EMAIL_PASSWORD_SET": pwd_set
-        }
+    diagnostic = {
+        "RESEND_API_KEY_CONFIGURED": bool(resend_key),
+        "RESEND_KEY_PREFIX": resend_key[:6] + "..." if resend_key else "NOT_FOUND",
+        "EMAIL_ADDRESS": sender or "NOT_SET",
+        "EMAIL_PASSWORD_SET": pwd_set,
+    }
     
     try:
         send_otp(to, "999999")
         return {
             "status": "success",
             "message": f"Test email sent successfully to {to}!",
-            "sender": sender
+            "diagnostics": diagnostic
         }
     except Exception as e:
         return {
             "status": "error",
             "message": f"Failed to send email: {str(e)}",
-            "sender": sender,
-            "EMAIL_PASSWORD_SET": pwd_set
+            "diagnostics": diagnostic
         }

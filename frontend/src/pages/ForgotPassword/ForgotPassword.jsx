@@ -22,18 +22,10 @@ function ForgotPassword() {
         try {
             setLoading(true);
             const response = await forgotPassword({ email });
-            const otpFromServer = response?.otp || null;
-            if (otpFromServer) {
-                toast.info(`🔑 Reset Code: ${otpFromServer} — Taking you to reset page...`, {
-                    autoClose: 8000,
-                    style: { fontWeight: 700, fontSize: "0.95rem" }
-                });
-            } else {
-                toast.success(response?.message || "Password reset OTP sent to your email!");
-            }
+            toast.success(response?.message || "Password reset OTP sent to your email!");
             setTimeout(() => {
-                navigate("/reset-password", { state: { email, otp: otpFromServer } });
-            }, 3000);
+                navigate("/reset-password", { state: { email } });
+            }, 1200);
         } catch (error) {
             toast.error(
                 error.response?.data?.detail ||

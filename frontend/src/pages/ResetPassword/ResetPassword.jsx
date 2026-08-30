@@ -20,15 +20,9 @@ function ResetPassword() {
     const location = useLocation();
     const navigate = useNavigate();
     const initialEmail = location.state?.email || "";
-    const prefillOtp = location.state?.otp || "";
 
     const [email, setEmail] = useState(initialEmail);
-    const [digits, setDigits] = useState(() => {
-        if (prefillOtp && prefillOtp.length === OTP_LENGTH) {
-            return prefillOtp.split("");
-        }
-        return Array(OTP_LENGTH).fill("");
-    });
+    const [digits, setDigits] = useState(Array(OTP_LENGTH).fill(""));
     const [newPassword, setNewPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -211,29 +205,6 @@ function ResetPassword() {
                             <h2 style={S.formTitle}>Set New Password</h2>
                             <p style={S.formSub}>Enter your 6-digit code and new password.</p>
                         </div>
-
-                        {/* Reset Code Display Banner */}
-                        {prefillOtp && (
-                            <div style={{
-                                background: "linear-gradient(135deg, rgba(168,85,247,0.15), rgba(99,102,241,0.1))",
-                                border: "1.5px solid rgba(168,85,247,0.5)",
-                                borderRadius: "1rem",
-                                padding: "1.1rem 1.4rem",
-                                marginBottom: "1.5rem",
-                                textAlign: "center",
-                                boxShadow: "0 0 20px rgba(168,85,247,0.2)",
-                            }}>
-                                <p style={{ fontSize: "0.72rem", color: "#a855f7", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.4rem" }}>
-                                    🔑 Reset Code (Auto-filled)
-                                </p>
-                                <p style={{ fontSize: "2rem", fontWeight: 900, letterSpacing: "0.35em", color: "#f9fafb", margin: 0, fontFamily: "'Courier New', monospace" }}>
-                                    {prefillOtp}
-                                </p>
-                                <p style={{ fontSize: "0.72rem", color: "#6b7280", marginTop: "0.4rem" }}>
-                                    Enter your new password below and click Reset Password ↓
-                                </p>
-                            </div>
-                        )}
 
                         {/* Form */}
                         <form onSubmit={handleSubmit} style={S.form}>

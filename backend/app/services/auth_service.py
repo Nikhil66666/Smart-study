@@ -60,17 +60,11 @@ def send_signup_otp(
     print(f"[OTP GENERATED] User: {data.email} | OTP Code: {otp}")
     print(f"==========================================\n")
 
-    email_sent = False
-    try:
-        send_otp(data.email, otp)
-        email_sent = True
-    except Exception as e:
-        print(f"[Email Delivery Warning] Could not send via Gmail SMTP: {e}")
+    send_otp(data.email, otp)
 
     return {
-        "message": "OTP sent successfully to your email!" if email_sent else f"OTP generated! (Verification Code: {otp})",
-        "email": data.email,
-        "otp": otp,
+        "message": "Verification code sent to your email!",
+        "email": data.email
     }
 
 
@@ -198,16 +192,10 @@ def forgot_password(
     print(f"[RESET OTP GENERATED] User: {user.email} | OTP Code: {otp}")
     print(f"==========================================\n")
 
-    email_sent = False
-    try:
-        send_otp(user.email, otp)
-        email_sent = True
-    except Exception as e:
-        print(f"[Email Delivery Warning] Could not send via Gmail SMTP: {e}")
+    send_otp(user.email, otp)
 
     return {
-        "message": "Reset OTP sent to your email!" if email_sent else f"Reset OTP generated! (Verification Code: {otp})",
-        "otp": otp
+        "message": "Password reset verification code sent to your email!"
     }
 
 

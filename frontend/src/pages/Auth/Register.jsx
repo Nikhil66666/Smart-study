@@ -34,22 +34,10 @@ function Register() {
         try {
             setLoading(true);
             const response = await sendOTP(formData);
-            const otpFromServer = response?.otp || null;
-            // If email could not be delivered, show OTP prominently in toast
-            if (otpFromServer) {
-                toast.info(`📋 Your verification code: ${otpFromServer} — Taking you to verify page...`, {
-                    autoClose: 8000,
-                    style: { fontWeight: 700, fontSize: "0.95rem", letterSpacing: "0.05em" }
-                });
-            } else {
-                toast.success(response?.message || "OTP sent to your email!");
-            }
-            // Wait 3s so user can see/copy the OTP before navigating
+            toast.success(response?.message || "Verification code sent to your email!");
             setTimeout(() => {
-                navigate("/verify-otp", {
-                    state: { email: formData.email, otp: otpFromServer }
-                });
-            }, 3000);
+                navigate("/verify-otp", { state: { email: formData.email } });
+            }, 1200);
         } catch (error) {
             toast.error(
                 error.response?.data?.detail ||

@@ -61,6 +61,16 @@ function MainLayout({ children, studyData }) {
         },
     ];
 
+    const isItemActive = (item) => {
+        const currentPath = location.pathname;
+        if (item.name === "Dashboard") return currentPath === "/dashboard";
+        if (item.name === "Exams") return currentPath === "/exams";
+        if (item.name === "Subjects") return currentPath.startsWith("/subjects");
+        if (item.name === "Study Plan") return currentPath.startsWith("/study-plan");
+        if (item.name === "AI Assistant") return currentPath.startsWith("/ai-assistant");
+        return currentPath === item.path;
+    };
+
     return (
         <div className="min-h-screen bg-[#05070e] text-slate-100 flex selection:bg-purple-500/30">
 
@@ -118,38 +128,41 @@ function MainLayout({ children, studyData }) {
                         Main Navigation
                     </p>
 
-                    {menuItems.map((item) => (
-                        <NavLink
-                            key={item.name}
-                            to={item.path}
-                            onClick={() => setSidebarOpen(false)}
-                            className={({ isActive }) => `
-                                group relative flex items-center gap-3.5 px-3.5 py-3 rounded-xl transition-all duration-200
-                                ${isActive
-                                    ? "bg-gradient-to-r from-purple-600/90 to-indigo-600/90 text-white font-semibold shadow-lg shadow-purple-600/25 border border-purple-400/30"
-                                    : "text-slate-400 hover:bg-white/[0.05] hover:text-slate-200 border border-transparent"
-                                }
-                            `}
-                        >
-                            <span className="w-6 text-center text-lg transition-transform group-hover:scale-110">
-                                {item.icon}
-                            </span>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium leading-none text-white group-hover:text-white">
-                                    {item.name}
-                                </p>
-                                <p className="text-[11px] text-slate-300/80 truncate mt-1">
-                                    {item.desc}
-                                </p>
-                            </div>
-
-                            {item.badge && (
-                                <span className="text-[9px] font-extrabold bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-2 py-0.5 rounded-full shadow-sm tracking-wider">
-                                    {item.badge}
+                    {menuItems.map((item) => {
+                        const active = isItemActive(item);
+                        return (
+                            <NavLink
+                                key={item.name}
+                                to={item.path}
+                                onClick={() => setSidebarOpen(false)}
+                                className={`
+                                    group relative flex items-center gap-3.5 px-3.5 py-3 rounded-xl transition-all duration-200
+                                    ${active
+                                        ? "bg-gradient-to-r from-purple-600/90 to-indigo-600/90 text-white font-semibold shadow-lg shadow-purple-600/25 border border-purple-400/30"
+                                        : "text-slate-400 hover:bg-white/[0.05] hover:text-slate-200 border border-transparent"
+                                    }
+                                `}
+                            >
+                                <span className="w-6 text-center text-lg transition-transform group-hover:scale-110">
+                                    {item.icon}
                                 </span>
-                            )}
-                        </NavLink>
-                    ))}
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium leading-none text-white group-hover:text-white">
+                                        {item.name}
+                                    </p>
+                                    <p className="text-[11px] text-slate-300/80 truncate mt-1">
+                                        {item.desc}
+                                    </p>
+                                </div>
+
+                                {item.badge && (
+                                    <span className="text-[9px] font-extrabold bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-2 py-0.5 rounded-full shadow-sm tracking-wider">
+                                        {item.badge}
+                                    </span>
+                                )}
+                            </NavLink>
+                        );
+                    })}
                 </nav>
 
                 {/* User Profile & Logout Box */}

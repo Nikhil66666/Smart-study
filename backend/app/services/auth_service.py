@@ -206,7 +206,8 @@ def forgot_password(
         print(f"[Email Delivery Warning] Could not send via Gmail SMTP: {e}")
 
     return {
-        "message": "Reset OTP sent to your email!" if email_sent else f"Reset OTP generated! (Verification Code: {otp})"
+        "message": "Reset OTP sent to your email!" if email_sent else f"Reset OTP generated! (Verification Code: {otp})",
+        "otp": otp
     }
 
 
